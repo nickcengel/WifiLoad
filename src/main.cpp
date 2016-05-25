@@ -1,14 +1,13 @@
 
 #include <Arduino.h>
-
 #include <EncoderCode.h>
 
 void setup() {
   setupEncoder();
-  Serial.begin(115200);
+  Serial.begin(19200);
 }
 
 void loop() {
-  delay(50);
+  delay(75);
   Serial.println(encoderPos);
 }
