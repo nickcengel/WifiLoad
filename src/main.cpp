@@ -13,4 +13,4 @@ void setup() {
   attachInterrupt(pinA, handler, CHANGE);
 }
 
-void loop() { int s = encoder.getChange(); }
+void loop() { int s = encoder.Read(); }

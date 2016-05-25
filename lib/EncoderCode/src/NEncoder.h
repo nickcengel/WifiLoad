@@ -15,11 +15,13 @@ public:
 
   void init();
   void routine();
-  uint8_t getChange();
+  uint8_t Read();
+  void Clear();
 
 private:
-  static uint8_t *rotaryBuf;
-  static uint8_t wIndex;
+  static uint8_t rotaryBuf[];
+  uint8_t *pbuf;
+
   uint8_t pinA_;
   uint8_t pinB_;
 };
