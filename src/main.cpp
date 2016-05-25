@@ -1,13 +1,16 @@
 
-#include <Arduino.h>
-#include <EncoderCode.h>
+#include <NEncoder.h>
+#include <arduino.h>
+
+uint8_t pinA = 3;
+uint8_t pinB = 1;
+
+NEncoder encoder(pinA, pinB);
+void handler() { encoder.routine(); }
 
 void setup() {
-  setupEncoder();
-  Serial.begin(19200);
+  encoder.init();
+  attachInterrupt(pinA, handler, CHANGE);
 }
 
-void loop() {
-  delay(75);
-  Serial.println(encoderPos);
-}
+void loop() { int s = encoder.getChange(); }
