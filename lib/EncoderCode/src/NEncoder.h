@@ -28,13 +28,14 @@ public:
 
   static void buttonRoutine();
   uint8_t button();
-  static void buttonTiming();
+  static void Timing();
 
 private:
-  static uint16_t encoderPosition;
-  static uint16_t max_;
   uint8_t pinA_;
   static uint8_t pinB_;
+  static uint16_t encoderPosition;
+  static uint16_t max_;
+  static uint16_t rotationTicker;
 
   static uint8_t buttonPin_;
   static uint8_t buttonState;

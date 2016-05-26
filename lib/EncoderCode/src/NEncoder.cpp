@@ -4,27 +4,23 @@
 #include <arduino.h>
 #include <ticker.h>
 
-Ticker bTicker;
-
+Ticker ticker;
 NEncoder::NEncoder(uint8_t pinA, uint8_t pinB, uint8_t buttonPin) {
   pinA_ = pinA;
   pinB_ = pinB;
   buttonPin_ = buttonPin;
 };
-
-uint16_t NEncoder::encoderPosition;
-
 uint8_t NEncoder::pinB_;
+uint16_t NEncoder::encoderPosition;
 uint16_t NEncoder::max_;
-uint8_t NEncoder::buttonPin_;
+uint16_t NEncoder::rotationTicker;
 
 void NEncoder::init(uint16_t max) {
   pinMode(pinA_, INPUT_PULLUP);
   pinMode(pinB_, INPUT_PULLUP);
-  pinMode(buttonPin_, INPUT_PULLUP);
   max_ = max;
-  bTicker.attach_ms(10, buttonTiming);
-  buttonState = ACKNOWLEDGED;
+  pinMode(buttonPin_, INPUT_PULLUP);
+  ticker.attach_ms(10, Timing);
 };
 
 uint16_t NEncoder::position() { return encoderPosition; };
@@ -34,14 +30,26 @@ void NEncoder::setRange(uint16_t max) { max_ = max; };
 
 void NEncoder::rotateRoutine() {
   cli();
-  bool turn = GPIP(pinB_);
-  if (!turn && (encoderPosition < max_))
-    encoderPosition++;
-  else if (turn && (encoderPosition > 0))
-    encoderPosition--;
+  bool direction = GPIP(pinB_);
+  uint16_t ticks = rotationTicker;
+  uint8_t step = 0;
+  if (ticks > 500)
+    step = 1;
+  else if ((ticks < 500) && (ticks > 50))
+    step = 10;
+  else if ((ticks < 50) && (ticks > 1))
+    step = 100;
+  if (!direction && (encoderPosition <= (max_ - step))) {
+    encoderPosition += step;
+    rotationTicker = 0;
+  } else if (direction && (encoderPosition >= step)) {
+    encoderPosition -= step;
+    rotationTicker = 0;
+  }
   sei();
 };
 
+uint8_t NEncoder::buttonPin_;
 uint16_t NEncoder::buttonTicker;
 uint8_t NEncoder::buttonState;
 
@@ -69,7 +77,11 @@ uint8_t NEncoder::button() {
     return 0; // still waiting on the button
 };
 
-void NEncoder::buttonTiming() {
+void NEncoder::Timing() {
+  rotationTicker++;
+  if (rotationTicker > 4094)
+    rotationTicker = 4094;
+
   buttonTicker++;               // increment the button timer
   if (buttonTicker > 4094) {    // make sure it doesn't overflow
     if (buttonState == CLICKED) // we're still waiting on the button
