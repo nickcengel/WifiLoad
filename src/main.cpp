@@ -1,16 +1,17 @@
-
 #include <NEncoder.h>
 #include <arduino.h>
 
-uint8_t pinA = 3;
-uint8_t pinB = 1;
+uint8_t pinA = 12;
+uint8_t pinB = 13;
+int oldA = 0;
+int oldB = 4;
 
 NEncoder encoder(pinA, pinB);
-void handler() { encoder.routine(); }
+void rotationhandler() { encoder.rotateRoutine(); }
 
 void setup() {
   encoder.init();
-  attachInterrupt(pinA, handler, CHANGE);
+  attachInterrupt(pinA, rotationhandler, RISING);
 }
 
-void loop() { int s = encoder.Read(); }
+void loop() { int g = encoder.value(oldA, 3); }
