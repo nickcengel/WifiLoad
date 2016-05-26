@@ -15,18 +15,13 @@ class NEncoder {
 public:
   NEncoder(uint8_t pinA, uint8_t pinB);
 
-  void init();
+  void init(uint16_t max);
   static void rotateRoutine();
-  int Read();
-  void Clear();
-  int value(int oldvalue, int scale);
+  uint16_t position();
 
 private:
-  static int *rotaryBuf;
-  static uint8_t tail;
-  static uint8_t head;
-  static int count;
-
+  static uint16_t encoderPosition;
+  static uint16_t max_;
   uint8_t pinA_;
   static uint8_t pinB_;
 };
